@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copia o projeto
-COPY . .
+COPY src .
 
 # Build do projeto
 RUN ./mvnw clean package -DskipTests
