@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.ProjetoParte1.eventos_api.dto.EventoDTO;
+
 
 import java.util.List;
 
@@ -37,29 +39,19 @@ public class EventoService {
         return repository.findByNomeContainingIgnoreCase(nome, pageable);
     }
 
-    public Evento salvar(Evento evento){
+    public Evento salvar(EventoDTO dto){
 
-        System.out.println(evento.getOrganizador());
-        System.out.println("Evento recebido:");
-        System.out.println("Organizador: " + evento.getOrganizador());
-        System.out.println("Categorias: " + evento.getCategorias());
-        System.out.println("Endereco: " + evento.getEndereco());
-
-        if (evento.getOrganizador() == null || evento.getOrganizador().getId() == null) {
-            throw new RuntimeException("Organizador não informado");
-
-        }
-
-        Usuario organizador = usuarioRepository.findById(evento.getOrganizador().getId())
+        Usuario organizador = usuarioRepository.findById(dto.getOrganizadorId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        Endereco endereco = enderecoRepository.findById(evento.getEndereco().getId())
+        Endereco endereco = enderecoRepository.findById(dto.getEnderecoId())
                 .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
 
-        List<Categoria> categorias = categoriaRepository.findAllById(
-                evento.getCategorias().stream().map(Categoria::getId).toList()
-        );
+        List<Categoria> categorias = categoriaRepository.findAllById(dto.getCategoriasIds());
 
+        Evento evento = new Evento();
+        evento.setNome(dto.getNome());
+        evento.setData(dto.getData());
         evento.setOrganizador(organizador);
         evento.setEndereco(endereco);
         evento.setCategorias(categorias);
@@ -67,29 +59,28 @@ public class EventoService {
         return repository.save(evento);
     }
 
-    public Evento atualizar(Long id, Evento evento) {
+    public Evento atualizar(Long id, EventoDTO dto) {
 
-        Evento existente = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+            Evento existente = repository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
 
-        Usuario organizador = usuarioRepository.findById(evento.getOrganizador().getId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+            Usuario organizador = usuarioRepository.findById(dto.getOrganizadorId())
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        Endereco endereco = enderecoRepository.findById(evento.getEndereco().getId())
-                .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
+            Endereco endereco = enderecoRepository.findById(dto.getEnderecoId())
+                    .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
 
-        List<Categoria> categorias = categoriaRepository.findAllById(
-                evento.getCategorias().stream().map(Categoria::getId).toList()
-        );
+            List<Categoria> categorias = categoriaRepository.findAllById(dto.getCategoriasIds());
 
-        existente.setNome(evento.getNome());
-        existente.setData(evento.getData());
-        existente.setOrganizador(organizador);
-        existente.setEndereco(endereco);
-        existente.setCategorias(categorias);
+            existente.setNome(dto.getNome());
+            existente.setData(dto.getData());
+            existente.setOrganizador(organizador);
+            existente.setEndereco(endereco);
+            existente.setCategorias(categorias);
 
-        return repository.save(existente);
-    }
+            return repository.save(existente);
+        }
+
 
     public void deletar(Long id) {
         repository.deleteById(id);

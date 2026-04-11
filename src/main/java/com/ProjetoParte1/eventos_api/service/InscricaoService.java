@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.ProjetoParte1.eventos_api.dto.InscricaoDTO;
+
+
 
 @Service
 public class InscricaoService {
@@ -28,24 +31,19 @@ public class InscricaoService {
                 .orElseThrow(() -> new RuntimeException("Inscrição não encontrada"));
     }
 
-    public Inscricao salvar(Inscricao inscricao) {
+    public Inscricao salvar(InscricaoDTO dto) {
 
-        if (inscricao.getUsuario() == null || inscricao.getUsuario().getId() == null) {
-            throw new RuntimeException("Usuário não informado");
-        }
-
-        if (inscricao.getEvento() == null || inscricao.getEvento().getId() == null) {
-            throw new RuntimeException("Evento não informado");
-        }
-
-        Usuario usuario = usuarioRepository.findById(inscricao.getUsuario().getId())
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        Evento evento = eventoRepository.findById(inscricao.getEvento().getId())
+        Evento evento = eventoRepository.findById(dto.getEventoId())
                 .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+
+        Inscricao inscricao = new Inscricao();
 
         inscricao.setUsuario(usuario);
         inscricao.setEvento(evento);
+        inscricao.setDataInscricao(dto.getDataInscricao());
 
         return repository.save(inscricao);
     }

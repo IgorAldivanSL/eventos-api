@@ -12,6 +12,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import org.springframework.validation.annotation.Validated;
+import com.ProjetoParte1.eventos_api.dto.EnderecoDTO;
+
+@Validated
 @RestController
 @RequestMapping("/enderecos")
 public class EnderecoController {
@@ -31,7 +37,7 @@ public class EnderecoController {
     @ApiResponse(responseCode = "200", description = "Endereço encontrado")
     @ApiResponse(responseCode = "404", description = "Endereço não encontrado")
     @GetMapping("/{id}")
-    public ResponseEntity<Endereco> buscar(@PathVariable Long id) {
+    public ResponseEntity<Endereco> buscar(@PathVariable @Positive(message = "ID deve ser positivo") Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
@@ -39,16 +45,16 @@ public class EnderecoController {
     @Operation(summary = "Criar endereço")
     @ApiResponse(responseCode = "201", description = "Endereço criado com sucesso")
     @PostMapping
-    public ResponseEntity<Endereco> salvar(@RequestBody Endereco endereco) {
-        Endereco novo = service.salvar(endereco);
+    public ResponseEntity<Endereco> salvar(@Valid @RequestBody EnderecoDTO dto) {
+        Endereco novo = service.salvar(dto);
         return ResponseEntity.status(201).body(novo);
     }
 
     // 🔹 ATUALIZAR
     @Operation(summary = "Atualizar endereço")
     @PutMapping("/{id}")
-    public ResponseEntity<Endereco> atualizar(@PathVariable Long id, @RequestBody Endereco endereco) {
-        Endereco atualizado = service.atualizar(id, endereco);
+    public ResponseEntity<Endereco> atualizar(@PathVariable @Positive(message = "ID deve ser positivo") Long id, @RequestBody EnderecoDTO dto) {
+        Endereco atualizado = service.atualizar(id, dto);
         return ResponseEntity.ok(atualizado);
     }
 
@@ -56,7 +62,7 @@ public class EnderecoController {
     @Operation(summary = "Deletar endereço")
     @ApiResponse(responseCode = "204", description = "Endereço deletado com sucesso")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable @Positive(message = "ID deve ser positivo") Long id) {
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }

@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.ProjetoParte1.eventos_api.dto.EnderecoDTO;
+
+
 
 @Service
 public class EnderecoService {
@@ -20,12 +23,15 @@ public class EnderecoService {
     public Endereco buscarPorId(Long id) {
         return repository.findById(id).orElseThrow();
     }
-
+                
     public Page<Endereco> buscarPorCidade(String cidade, Pageable pageable) {
         return repository.findByCidadeContainingIgnoreCase(cidade, pageable);
     }
 
-    public Endereco salvar(Endereco endereco) {
+    public Endereco salvar(EnderecoDTO dto) {
+        Endereco endereco = new Endereco();
+        endereco.setRua(dto.getRua());
+        endereco.setCidade(dto.getCidade());
         return repository.save(endereco);
     }
 
@@ -33,12 +39,12 @@ public class EnderecoService {
         repository.deleteById(id);
     }
 
-    public Endereco atualizar(Long id, Endereco endereco) {
+    public Endereco atualizar(Long id, EnderecoDTO dto) {
         Endereco existente = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
 
-        existente.setRua(endereco.getRua());
-        existente.setCidade(endereco.getCidade());
+        existente.setRua(dto.getRua());
+        existente.setCidade(dto.getCidade());
 
         return repository.save(existente);
     }

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.ProjetoParte1.eventos_api.dto.CategoriaDTO;
+
 
 @Service
 public class CategoriaService {
@@ -25,7 +27,10 @@ public class CategoriaService {
         return repository.findByNomeContainingIgnoreCase(nome, pageable);
     }
 
-    public Categoria salvar(Categoria categoria) {
+    public Categoria salvar(CategoriaDTO dto) {
+
+        Categoria categoria = new Categoria();
+        categoria.setNome(dto.getNome());
         return repository.save(categoria);
     }
 
@@ -33,11 +38,11 @@ public class CategoriaService {
         repository.deleteById(id);
     }
 
-    public Categoria atualizar(Long id, Categoria categoria) {
+    public Categoria atualizar(Long id, CategoriaDTO dto) {
         Categoria existente = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
 
-        existente.setNome(categoria.getNome());
+        existente.setNome(dto.getNome());
 
         return repository.save(existente);
     }

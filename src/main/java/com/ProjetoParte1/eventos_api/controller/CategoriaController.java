@@ -12,6 +12,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import org.springframework.validation.annotation.Validated;
+import com.ProjetoParte1.eventos_api.dto.CategoriaDTO;
+
+@Validated
 @RestController
 @RequestMapping("/categorias")
 public class CategoriaController {
@@ -29,29 +35,29 @@ public class CategoriaController {
     @ApiResponse(responseCode = "200", description = "Categoria encontrada")
     @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     @GetMapping("/{id}")
-    public ResponseEntity<Categoria> buscar(@PathVariable Long id) {
+    public ResponseEntity<Categoria> buscar(@PathVariable @Positive(message = "ID deve ser positivo") Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @Operation(summary = "Criar categoria")
     @ApiResponse(responseCode = "201", description = "Categoria criada com sucesso")
     @PostMapping
-    public ResponseEntity<Categoria> salvar(@RequestBody Categoria categoria) {
-        Categoria nova = service.salvar(categoria);
+    public ResponseEntity<Categoria> salvar(@Valid @RequestBody CategoriaDTO dto) {
+        Categoria nova = service.salvar(dto);
         return ResponseEntity.status(201).body(nova);
     }
 
     @Operation(summary = "Atualizar categoria")
     @PutMapping("/{id}")
-    public ResponseEntity<Categoria> atualizar(@PathVariable Long id, @RequestBody Categoria categoria) {
-        Categoria atualizada = service.atualizar(id, categoria);
+    public ResponseEntity<Categoria> atualizar(@PathVariable @Positive(message = "ID deve ser positivo") Long id, @Valid @RequestBody CategoriaDTO dto) {
+        Categoria atualizada = service.atualizar(id, dto);
         return ResponseEntity.ok(atualizada);
     }
 
     @Operation(summary = "Deletar categoria")
     @ApiResponse(responseCode = "204", description = "Categoria deletada com sucesso")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable @Positive(message = "ID deve ser positivo") Long id) {
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }

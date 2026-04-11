@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.ProjetoParte1.eventos_api.dto.UsuarioDTO;
 
 @Service
 public class UsuarioService {
@@ -25,7 +26,11 @@ public class UsuarioService {
         return repository.findByNomeContainingIgnoreCase(nome, pageable);
     }
 
-    public Usuario salvar (Usuario usuario){
+    public Usuario salvar (UsuarioDTO dto)
+    {   Usuario usuario = new Usuario();
+        usuario.setNome(dto.getNome());
+        usuario.setEmail(dto.getEmail());
+        usuario.setTipo(dto.getTipo());
         return repository.save(usuario);
     }
 
@@ -33,10 +38,11 @@ public class UsuarioService {
         repository.deleteById(id);
     }
 
-    public Usuario atualizar(Long id, Usuario usuario) {
+    public Usuario atualizar(Long id, UsuarioDTO dto) {
         Usuario existente = repository.findById(id).orElseThrow(() -> new RuntimeException("Usuario não encontrado"));
-        existente.setNome(usuario.getNome());
-        existente.setEmail(usuario.getEmail());
+        existente.setNome(dto.getNome());
+        existente.setEmail(dto.getEmail());
+        existente.setTipo(dto.getTipo());
         return repository.save(existente);
     }
 }
