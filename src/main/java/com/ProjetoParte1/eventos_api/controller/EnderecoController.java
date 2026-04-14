@@ -25,23 +25,23 @@ public class EnderecoController {
     @Autowired
     private EnderecoService service;
 
-    // 🔹 LISTAR
     @Operation(summary = "Listar endereços")
+    @ApiResponse(responseCode = "200", description = "Lista de endereços retornada com sucesso")
     @GetMapping
     public ResponseEntity<Page<Endereco>> listar(Pageable pageable) {
         return ResponseEntity.ok(service.listar(pageable));
     }
 
-    // 🔹 BUSCAR POR ID
     @Operation(summary = "Buscar endereço por ID")
     @ApiResponse(responseCode = "200", description = "Endereço encontrado")
     @ApiResponse(responseCode = "404", description = "Endereço não encontrado")
     @GetMapping("/{id}")
-    public ResponseEntity<Endereco> buscar(@PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+    public ResponseEntity<Endereco> buscar(
+            @PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
-    // 🔹 CRIAR
     @Operation(summary = "Criar endereço")
     @ApiResponse(responseCode = "201", description = "Endereço criado com sucesso")
     @PostMapping
@@ -50,27 +50,35 @@ public class EnderecoController {
         return ResponseEntity.status(201).body(novo);
     }
 
-    // 🔹 ATUALIZAR
     @Operation(summary = "Atualizar endereço")
+    @ApiResponse(responseCode = "200", description = "Endereço atualizado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Endereço não encontrado")
     @PutMapping("/{id}")
-    public ResponseEntity<Endereco> atualizar(@PathVariable @Positive(message = "ID deve ser positivo") Long id, @RequestBody EnderecoDTO dto) {
+    public ResponseEntity<Endereco> atualizar(
+            @PathVariable @Positive(message = "ID deve ser positivo") Long id,
+            @Valid @RequestBody EnderecoDTO dto) {
+
         Endereco atualizado = service.atualizar(id, dto);
         return ResponseEntity.ok(atualizado);
     }
 
-    // 🔹 DELETAR
     @Operation(summary = "Deletar endereço")
     @ApiResponse(responseCode = "204", description = "Endereço deletado com sucesso")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+    public ResponseEntity<Void> deletar(
+            @PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
-    // 🔹 BUSCA PERSONALIZADA
     @Operation(summary = "Buscar endereços por cidade")
+    @ApiResponse(responseCode = "200", description = "Endereços encontrados com sucesso")
     @GetMapping("/buscar")
-    public ResponseEntity<Page<Endereco>> buscarPorCidade(@RequestParam String cidade, Pageable pageable) {
+    public ResponseEntity<Page<Endereco>> buscarPorCidade(
+            @RequestParam String cidade,
+            Pageable pageable) {
+
         return ResponseEntity.ok(service.buscarPorCidade(cidade, pageable));
     }
 }

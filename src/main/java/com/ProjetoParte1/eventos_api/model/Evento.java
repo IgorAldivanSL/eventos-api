@@ -28,7 +28,7 @@ public class Evento {
     )
     private java.util.List<Categoria> categorias;
 
-    @OneToOne
+    @ManyToOne
     private Endereco endereco;
 
     public Long getId() {

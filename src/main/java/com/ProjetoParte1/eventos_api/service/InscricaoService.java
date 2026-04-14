@@ -48,6 +48,23 @@ public class InscricaoService {
         return repository.save(inscricao);
     }
 
+    public Inscricao atualizar(Long id, InscricaoDTO dto) {
+        Inscricao existente = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Inscrição não encontrada"));
+
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Evento evento = eventoRepository.findById(dto.getEventoId())
+                .orElseThrow(() -> new RuntimeException("Evento não encontrado"));
+
+        existente.setUsuario(usuario);
+        existente.setEvento(evento);
+        existente.setDataInscricao(dto.getDataInscricao());
+
+        return repository.save(existente);
+    }
+
     public void deletar(Long id) {
         repository.deleteById(id);
     }

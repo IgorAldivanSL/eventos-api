@@ -26,6 +26,7 @@ public class CategoriaController {
     private CategoriaService service;
 
     @Operation(summary = "Listar categorias")
+    @ApiResponse(responseCode = "200", description = "Lista de categorias retornada com sucesso")
     @GetMapping
     public ResponseEntity<Page<Categoria>> listar(Pageable pageable) {
         return ResponseEntity.ok(service.listar(pageable));
@@ -35,7 +36,8 @@ public class CategoriaController {
     @ApiResponse(responseCode = "200", description = "Categoria encontrada")
     @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     @GetMapping("/{id}")
-    public ResponseEntity<Categoria> buscar(@PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+    public ResponseEntity<Categoria> buscar(
+            @PathVariable @Positive(message = "ID deve ser positivo") Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
@@ -48,8 +50,13 @@ public class CategoriaController {
     }
 
     @Operation(summary = "Atualizar categoria")
+    @ApiResponse(responseCode = "200", description = "Categoria atualizada com sucesso")
+    @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
     @PutMapping("/{id}")
-    public ResponseEntity<Categoria> atualizar(@PathVariable @Positive(message = "ID deve ser positivo") Long id, @Valid @RequestBody CategoriaDTO dto) {
+    public ResponseEntity<Categoria> atualizar(
+            @PathVariable @Positive(message = "ID deve ser positivo") Long id,
+            @Valid @RequestBody CategoriaDTO dto) {
+
         Categoria atualizada = service.atualizar(id, dto);
         return ResponseEntity.ok(atualizada);
     }
@@ -57,14 +64,20 @@ public class CategoriaController {
     @Operation(summary = "Deletar categoria")
     @ApiResponse(responseCode = "204", description = "Categoria deletada com sucesso")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+    public ResponseEntity<Void> deletar(
+            @PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Buscar categorias por nome")
+    @ApiResponse(responseCode = "200", description = "Categorias encontradas com sucesso")
     @GetMapping("/buscar")
-    public ResponseEntity<Page<Categoria>> buscarPorNome(@RequestParam String nome, Pageable pageable) {
+    public ResponseEntity<Page<Categoria>> buscarPorNome(
+            @RequestParam String nome,
+            Pageable pageable) {
+
         return ResponseEntity.ok(service.buscarPorNome(nome, pageable));
     }
 }

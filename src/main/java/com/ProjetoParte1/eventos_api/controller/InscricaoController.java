@@ -27,6 +27,7 @@ public class InscricaoController {
 
     // 🔹 LISTAR
     @Operation(summary = "Listar inscrições")
+    @ApiResponse(responseCode = "200", description = "Lista de inscrições retornada com sucesso")
     @GetMapping
     public ResponseEntity<Page<Inscricao>> listar(Pageable pageable) {
         return ResponseEntity.ok(service.listar(pageable));
@@ -37,7 +38,9 @@ public class InscricaoController {
     @ApiResponse(responseCode = "200", description = "Inscrição encontrada")
     @ApiResponse(responseCode = "404", description = "Inscrição não encontrada")
     @GetMapping("/{id}")
-    public ResponseEntity<Inscricao> buscar(@PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+    public ResponseEntity<Inscricao> buscar(
+            @PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
@@ -50,26 +53,50 @@ public class InscricaoController {
         return ResponseEntity.status(201).body(nova);
     }
 
+    // 🔹 ATUALIZAR (NOVO)
+    @Operation(summary = "Atualizar inscrição")
+    @ApiResponse(responseCode = "200", description = "Inscrição atualizada com sucesso")
+    @ApiResponse(responseCode = "404", description = "Inscrição não encontrada")
+    @PutMapping("/{id}")
+    public ResponseEntity<Inscricao> atualizar(
+            @PathVariable @Positive(message = "ID deve ser positivo") Long id,
+            @Valid @RequestBody InscricaoDTO dto) {
+
+        Inscricao atualizada = service.atualizar(id, dto);
+        return ResponseEntity.ok(atualizada);
+    }
+
     // 🔹 DELETAR
     @Operation(summary = "Deletar inscrição")
     @ApiResponse(responseCode = "204", description = "Inscrição deletada com sucesso")
+    @ApiResponse(responseCode = "404", description = "Inscrição não encontrada")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable @Positive(message = "Id deve ser positivo") Long id) {
+    public ResponseEntity<Void> deletar(
+            @PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
     // 🔹 BUSCA PERSONALIZADA (por usuário)
     @Operation(summary = "Buscar inscrições por usuário")
+    @ApiResponse(responseCode = "200", description = "Inscrições encontradas com sucesso")
     @GetMapping("/buscar/usuario")
-    public ResponseEntity<Page<Inscricao>> buscarPorUsuario(@RequestParam @Positive Long usuarioId, Pageable pageable) {
+    public ResponseEntity<Page<Inscricao>> buscarPorUsuario(
+            @RequestParam @Positive(message = "ID deve ser positivo") Long usuarioId,
+            Pageable pageable) {
+
         return ResponseEntity.ok(service.buscarPorUsuario(usuarioId, pageable));
     }
 
     // 🔹 BUSCA PERSONALIZADA (por evento)
     @Operation(summary = "Buscar inscrições por evento")
+    @ApiResponse(responseCode = "200", description = "Inscrições encontradas com sucesso")
     @GetMapping("/buscar/evento")
-    public ResponseEntity<Page<Inscricao>> buscarPorEvento(@RequestParam @Positive Long eventoId, Pageable pageable) {
+    public ResponseEntity<Page<Inscricao>> buscarPorEvento(
+            @RequestParam @Positive(message = "ID deve ser positivo") Long eventoId,
+            Pageable pageable) {
+
         return ResponseEntity.ok(service.buscarPorEvento(eventoId, pageable));
     }
 }

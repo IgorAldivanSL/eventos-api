@@ -47,7 +47,12 @@ public class EventoService {
         Endereco endereco = enderecoRepository.findById(dto.getEnderecoId())
                 .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
 
+        // 🔥 VALIDAÇÃO CORRETA DAS CATEGORIAS
         List<Categoria> categorias = categoriaRepository.findAllById(dto.getCategoriasIds());
+
+        if (categorias.size() != dto.getCategoriasIds().size()) {
+            throw new RuntimeException("Uma ou mais categorias não foram encontradas");
+        }
 
         Evento evento = new Evento();
         evento.setNome(dto.getNome());

@@ -3,11 +3,17 @@ package com.ProjetoParte1.eventos_api.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
 import com.ProjetoParte1.eventos_api.model.TipoUsuario;
 
 public class UsuarioDTO {
 
     @NotBlank(message = "NOme e obrigatorio")
+    @Pattern(
+            regexp = "^[a-zA-ZÀ-ÿ\\s]+$",
+            message = "Nome deve conter apenas letras"
+    )
     private String nome;
 
     @Email(message = "Email invalido")

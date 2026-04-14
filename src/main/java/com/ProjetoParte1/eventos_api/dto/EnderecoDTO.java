@@ -1,10 +1,15 @@
 package com.ProjetoParte1.eventos_api.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 public class EnderecoDTO {
 
     @NotBlank(message = "Rua é obrigatória")
+    @Pattern(
+            regexp = ".*[a-zA-ZÀ-ÿ].*",
+            message = "Rua deve conter letras"
+    )
     private String rua;
 
     @NotBlank(message = "Cidade é obrigatória")

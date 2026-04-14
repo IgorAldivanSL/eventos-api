@@ -36,11 +36,22 @@ public class GlobalExceptionHandler {
 
     //  VALIDAÇÃO (PASSO 3 👇)
     @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidation(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleValidation(
+            org.springframework.web.bind.MethodArgumentNotValidException ex,
+            HttpServletRequest request) {
+
+        StringBuilder mensagem = new StringBuilder("Erro de validação: ");
+
+        ex.getBindingResult().getFieldErrors().forEach(error -> {
+            mensagem.append(error.getField())
+                    .append(" - ")
+                    .append(error.getDefaultMessage())
+                    .append("; ");
+        });
 
         ApiError error = new ApiError(
                 HttpStatus.BAD_REQUEST.value(),
-                "Erro de validação nos campos",
+                mensagem.toString(),
                 request.getRequestURI()
         );
 

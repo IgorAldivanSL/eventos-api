@@ -28,25 +28,21 @@ public class UsuarioController {
     @Autowired
     private UsuarioService service;
 
-    // 🔹 LISTAR
     @Operation(summary = "Listar usuários")
+    @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso")
     @GetMapping
     public ResponseEntity<Page<Usuario>> listar(Pageable pageable) {
         return ResponseEntity.ok(service.listar(pageable));
     }
 
-    // 🔹 BUSCAR POR ID (HATEOAS)
     @Operation(summary = "Buscar usuário por ID")
     @ApiResponse(responseCode = "200", description = "Usuário encontrado")
     @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     @GetMapping("/{id}")
-    public ResponseEntity<EntityModel<Usuario>> buscar(@PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+    public ResponseEntity<EntityModel<Usuario>> buscar(
+            @PathVariable @Positive(message = "ID deve ser positivo") Long id) {
 
         Usuario usuario = service.buscarPorId(id);
-
-        if(usuario == null){
-            return ResponseEntity.notFound().build();
-        }
 
         EntityModel<Usuario> resource = EntityModel.of(usuario,
                 linkTo(methodOn(UsuarioController.class).buscar(id)).withSelfRel(),
@@ -58,7 +54,6 @@ public class UsuarioController {
         return ResponseEntity.ok(resource);
     }
 
-    // 🔹 CRIAR
     @Operation(summary = "Criar usuário")
     @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso")
     @PostMapping
@@ -67,27 +62,36 @@ public class UsuarioController {
         return ResponseEntity.status(201).body(novo);
     }
 
-    // 🔹 ATUALIZAR
     @Operation(summary = "Atualizar usuário")
+    @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable @Positive(message = "ID deve ser positivo") Long id, @Valid @RequestBody UsuarioDTO dto) {
+    public ResponseEntity<Usuario> atualizar(
+            @PathVariable @Positive(message = "ID deve ser positivo") Long id,
+            @Valid @RequestBody UsuarioDTO dto) {
+
         Usuario atualizado = service.atualizar(id, dto);
         return ResponseEntity.ok(atualizado);
     }
 
-    // 🔹 DELETAR
     @Operation(summary = "Deletar usuário")
     @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+    public ResponseEntity<Void> deletar(
+            @PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
-    // 🔹 BUSCA PERSONALIZADA
     @Operation(summary = "Buscar usuários por nome")
+    @ApiResponse(responseCode = "200", description = "Usuários encontrados com sucesso")
     @GetMapping("/buscar")
-    public ResponseEntity<Page<Usuario>> buscarPorNome(@RequestParam String nome, Pageable pageable) {
+    public ResponseEntity<Page<Usuario>> buscarPorNome(
+            @RequestParam String nome,
+            Pageable pageable) {
+
         return ResponseEntity.ok(service.buscarPorNome(nome, pageable));
     }
 }
