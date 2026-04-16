@@ -11,11 +11,11 @@ import java.util.List;
 
 public class EventoDTO {
 
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm")
     @NotBlank(message = "Nome é obrigatório")
     private String nome;
 
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm")
     @NotNull(message = "Data é obrigatória")
     private LocalDateTime data;
 

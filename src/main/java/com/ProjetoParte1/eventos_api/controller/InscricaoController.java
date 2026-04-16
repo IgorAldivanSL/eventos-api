@@ -1,5 +1,7 @@
 package com.ProjetoParte1.eventos_api.controller;
 
+import com.ProjetoParte1.eventos_api.dto.InscricaoDTO;
+import com.ProjetoParte1.eventos_api.dto.InscricaoResponseDTO;
 import com.ProjetoParte1.eventos_api.model.Inscricao;
 import com.ProjetoParte1.eventos_api.service.InscricaoService;
 
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.validation.annotation.Validated;
-import com.ProjetoParte1.eventos_api.dto.InscricaoDTO;
 
 @Validated
 @RestController
@@ -26,77 +27,90 @@ public class InscricaoController {
     private InscricaoService service;
 
     // 🔹 LISTAR
-    @Operation(summary = "Listar inscrições")
+    @Operation(summary = "Listar todas as inscrições")
     @ApiResponse(responseCode = "200", description = "Lista de inscrições retornada com sucesso")
+    @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
     @GetMapping
-    public ResponseEntity<Page<Inscricao>> listar(Pageable pageable) {
-        return ResponseEntity.ok(service.listar(pageable));
+    public ResponseEntity<Page<InscricaoResponseDTO>> listar(Pageable pageable) {
+        Page<Inscricao> page = service.listar(pageable);
+        return ResponseEntity.ok(page.map(service::toDTO));
     }
 
     // 🔹 BUSCAR POR ID
     @Operation(summary = "Buscar inscrição por ID")
-    @ApiResponse(responseCode = "200", description = "Inscrição encontrada")
+    @ApiResponse(responseCode = "200", description = "Inscrição encontrada com sucesso")
     @ApiResponse(responseCode = "404", description = "Inscrição não encontrada")
     @GetMapping("/{id}")
-    public ResponseEntity<Inscricao> buscar(
-            @PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+    public ResponseEntity<InscricaoResponseDTO> buscar(
+            @PathVariable @Positive Long id) {
 
-        return ResponseEntity.ok(service.buscarPorId(id));
+        Inscricao inscricao = service.buscarPorId(id);
+        return ResponseEntity.ok(service.toDTO(inscricao));
     }
 
     // 🔹 CRIAR
-    @Operation(summary = "Criar inscrição")
+    @Operation(summary = "Criar nova inscrição")
     @ApiResponse(responseCode = "201", description = "Inscrição criada com sucesso")
+    @ApiResponse(responseCode = "400", description = "Dados inválidos")
     @PostMapping
-    public ResponseEntity<Inscricao> salvar(@Valid @RequestBody InscricaoDTO dto) {
+    public ResponseEntity<InscricaoResponseDTO> salvar(
+            @Valid @RequestBody InscricaoDTO dto) {
+
         Inscricao nova = service.salvar(dto);
-        return ResponseEntity.status(201).body(nova);
+        return ResponseEntity.status(201).body(service.toDTO(nova));
     }
 
-    // 🔹 ATUALIZAR (NOVO)
-    @Operation(summary = "Atualizar inscrição")
+    // 🔹 ATUALIZAR
+    @Operation(summary = "Atualizar inscrição existente")
     @ApiResponse(responseCode = "200", description = "Inscrição atualizada com sucesso")
+    @ApiResponse(responseCode = "400", description = "Dados inválidos")
     @ApiResponse(responseCode = "404", description = "Inscrição não encontrada")
     @PutMapping("/{id}")
-    public ResponseEntity<Inscricao> atualizar(
-            @PathVariable @Positive(message = "ID deve ser positivo") Long id,
+    public ResponseEntity<InscricaoResponseDTO> atualizar(
+            @PathVariable @Positive Long id,
             @Valid @RequestBody InscricaoDTO dto) {
 
         Inscricao atualizada = service.atualizar(id, dto);
-        return ResponseEntity.ok(atualizada);
+        return ResponseEntity.ok(service.toDTO(atualizada));
     }
 
     // 🔹 DELETAR
-    @Operation(summary = "Deletar inscrição")
-    @ApiResponse(responseCode = "204", description = "Inscrição deletada com sucesso")
+    @Operation(summary = "Remover inscrição")
+    @ApiResponse(responseCode = "204", description = "Inscrição removida com sucesso")
     @ApiResponse(responseCode = "404", description = "Inscrição não encontrada")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(
-            @PathVariable @Positive(message = "ID deve ser positivo") Long id) {
+            @PathVariable @Positive Long id) {
 
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
-    // 🔹 BUSCA PERSONALIZADA (por usuário)
-    @Operation(summary = "Buscar inscrições por usuário")
+    // 🔹 BUSCAR POR USUÁRIO
+    @Operation(summary = "Buscar inscrições pelo ID do usuário")
     @ApiResponse(responseCode = "200", description = "Inscrições encontradas com sucesso")
+    @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
+    @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
     @GetMapping("/buscar/usuario")
-    public ResponseEntity<Page<Inscricao>> buscarPorUsuario(
-            @RequestParam @Positive(message = "ID deve ser positivo") Long usuarioId,
+    public ResponseEntity<Page<InscricaoResponseDTO>> buscarPorUsuario(
+            @RequestParam Long usuarioId,
             Pageable pageable) {
 
-        return ResponseEntity.ok(service.buscarPorUsuario(usuarioId, pageable));
+        Page<Inscricao> page = service.buscarPorUsuario(usuarioId, pageable);
+        return ResponseEntity.ok(page.map(service::toDTO));
     }
 
-    // 🔹 BUSCA PERSONALIZADA (por evento)
-    @Operation(summary = "Buscar inscrições por evento")
+    // 🔹 BUSCAR POR EVENTO
+    @Operation(summary = "Buscar inscrições pelo ID do evento")
     @ApiResponse(responseCode = "200", description = "Inscrições encontradas com sucesso")
+    @ApiResponse(responseCode = "404", description = "Evento não encontrado")
+    @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
     @GetMapping("/buscar/evento")
-    public ResponseEntity<Page<Inscricao>> buscarPorEvento(
-            @RequestParam @Positive(message = "ID deve ser positivo") Long eventoId,
+    public ResponseEntity<Page<InscricaoResponseDTO>> buscarPorEvento(
+            @RequestParam Long eventoId,
             Pageable pageable) {
 
-        return ResponseEntity.ok(service.buscarPorEvento(eventoId, pageable));
+        Page<Inscricao> page = service.buscarPorEvento(eventoId, pageable);
+        return ResponseEntity.ok(page.map(service::toDTO));
     }
 }
