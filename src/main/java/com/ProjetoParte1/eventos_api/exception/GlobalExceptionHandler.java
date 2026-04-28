@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    // 🟠 400 - Erros de validação (@Valid)
+    // 🟠 400 - Erros de validação (@Valid - body)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(
             MethodArgumentNotValidException ex,
@@ -82,7 +82,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    // 🔵 400 - Ordenação inválida (sort errado)
+    // 🔵 400 - Ordenação inválida (sort errado no Swagger)
     @ExceptionHandler(org.springframework.data.mapping.PropertyReferenceException.class)
     public ResponseEntity<ApiError> handleInvalidSort(
             org.springframework.data.mapping.PropertyReferenceException ex,
@@ -98,22 +98,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
-    // 🔥 500 - Erro interno (fallback)
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGeneric(
-            Exception ex,
-            HttpServletRequest request) {
-
-        ApiError error = new ApiError(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Internal Server Error",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
-
+    // 🟠 400 - Validação de parâmetros (@Positive, @NotNull em params)
     @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
     public ResponseEntity<ApiError> handleConstraintViolation(
             jakarta.validation.ConstraintViolationException ex,
@@ -133,5 +118,21 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    // 🔥 500 - Erro interno (fallback SEM expor detalhes)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleGeneric(
+            Exception ex,
+            HttpServletRequest request) {
+
+        ApiError error = new ApiError(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error",
+                "Erro inesperado na aplicação",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }

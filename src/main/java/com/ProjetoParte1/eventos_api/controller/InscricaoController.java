@@ -93,7 +93,7 @@ public class InscricaoController {
     @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
     @GetMapping("/buscar/usuario")
     public ResponseEntity<Page<InscricaoResponseDTO>> buscarPorUsuario(
-            @RequestParam Long usuarioId,
+            @RequestParam @Positive(message = "ID deve ser positivo.") Long usuarioId,
             Pageable pageable) {
 
         Page<Inscricao> page = service.buscarPorUsuario(usuarioId, pageable);
@@ -107,7 +107,7 @@ public class InscricaoController {
     @ApiResponse(responseCode = "400", description = "Parâmetros inválidos")
     @GetMapping("/buscar/evento")
     public ResponseEntity<Page<InscricaoResponseDTO>> buscarPorEvento(
-            @RequestParam Long eventoId,
+            @RequestParam  @Positive(message = "ID deve ser positivo.") Long eventoId,
             Pageable pageable) {
 
         Page<Inscricao> page = service.buscarPorEvento(eventoId, pageable);
